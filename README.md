@@ -290,7 +290,7 @@ Query data:
 python src/utils/query_database.py
 
 ## 📁 Project Structure
-
+```
 australian-retail-intelligence/
 ├── data/ - Data files (gitignored)
 │   ├── abs_sample.csv - Sample ABS data
@@ -321,6 +321,7 @@ australian-retail-intelligence/
 ├── .gitignore - Git ignore rules
 ├── README.md - This file
 └── requirements.txt - Python dependencies
+```
 
 ## 🎯 Business Value & Use Cases
 
