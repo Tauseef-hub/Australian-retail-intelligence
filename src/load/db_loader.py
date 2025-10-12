@@ -117,9 +117,10 @@ class DatabaseLoader:
             print(f"⚠️ Could not log ETL job: {e}")
     
     def verify_data_quality(self, df):
-        """Run basic data quality checks before loading"""
+        """Run basic data quality checks and clean data before loading"""
         print("\n🔍 Running data quality checks...")
         
+        original_count = len(df)
         issues = []
         
         # Check for nulls in critical columns
@@ -133,18 +134,23 @@ class DatabaseLoader:
         if (df['turnover_millions'] < 0).any():
             issues.append("Found negative turnover values")
         
-        # Check for duplicate dates per category/state
-        duplicates = df.duplicated(subset=['sale_date', 'category', 'state']).sum()
-        if duplicates > 0:
-            issues.append(f"Found {duplicates} duplicate records")
+        # Remove duplicates (this modifies the dataframe in place)
+        duplicates_before = len(df)
+        df.drop_duplicates(subset=['sale_date', 'category', 'state'], keep='first', inplace=True)
+        duplicates_removed = duplicates_before - len(df)
+        
+        if duplicates_removed > 0:
+            print(f"⚠️ Removed {duplicates_removed:,} duplicate records")
+            print(f"   Remaining unique records: {len(df):,}")
         
         if issues:
-            print("⚠️ Data quality issues found:")
+            print("❌ Data quality issues found:")
             for issue in issues:
                 print(f"   - {issue}")
             return False
         else:
-            print("✅ All data quality checks passed")
+            print(f"✅ All data quality checks passed")
+            print(f"   Final clean records: {len(df):,}")
             return True
 
 
@@ -167,7 +173,7 @@ def main():
     
     print(f"Loaded {len(df)} transformed records from CSV")
     
-    # Quality checks
+    # Quality checks (modifies df in place)
     if not loader.verify_data_quality(df):
         print("\n⚠️ Data quality issues detected. Fix before loading.")
         return

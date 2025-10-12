@@ -25,11 +25,31 @@ class RetailDataTransformer:
         return True
     
     def parse_time_period(self, df):
-        """Convert TIME_PERIOD (e.g., '1982-04') to proper date"""
+        """Convert TIME_PERIOD to proper date - handle multiple formats"""
         print("\nParsing time periods...")
         
-        # Convert TIME_PERIOD to datetime
-        df['sale_date'] = pd.to_datetime(df['TIME_PERIOD'] + '-01')
+        # Check the format of TIME_PERIOD
+        sample_period = str(df['TIME_PERIOD'].iloc[0])
+        print(f"   Sample TIME_PERIOD: {sample_period}")
+        
+        try:
+            # Try format 1: YYYY-MM (e.g., "1982-04")
+            df['sale_date'] = pd.to_datetime(df['TIME_PERIOD'] + '-01', format='%Y-%m-%d')
+        except:
+            try:
+                # Try format 2: YYYY-QN (e.g., "2020-Q1")
+                df['sale_date'] = pd.to_datetime(df['TIME_PERIOD'], format='mixed')
+            except:
+                # Try format 3: Let pandas infer
+                df['sale_date'] = pd.to_datetime(df['TIME_PERIOD'], format='ISO8601', errors='coerce')
+        
+        # Remove any rows where date parsing failed
+        before_count = len(df)
+        df = df[df['sale_date'].notna()].copy()
+        after_count = len(df)
+        
+        if before_count != after_count:
+            print(f"   ⚠️ Removed {before_count - after_count} rows with unparseable dates")
         
         # Extract components
         df['year'] = df['sale_date'].dt.year
