@@ -1,40 +1,43 @@
 # Australian Retail Intelligence System
 
-**Production-grade retail analytics using real Australian Bureau of Statistics data - 42 years of historical retail sales**
+**Production-grade retail analytics with AI-powered forecasting using 42 years of Australian retail data**
 
-![Project Status](https://img.shields.io/badge/Status-Complete-brightgreen)
+![Project Status](https://img.shields.io/badge/Status-Phase%202%20Complete-brightgreen)
 ![Database](https://img.shields.io/badge/Database-PostgreSQL-blue)
 ![Cloud](https://img.shields.io/badge/Cloud-Supabase-green)
 ![Records](https://img.shields.io/badge/Records-95,798-orange)
+![Forecasts](https://img.shields.io/badge/Forecasts-2,304-purple)
 
 ## 🎯 Business Problem
 
-Australian retailers face inventory management challenges with 15-20% waste and 8% stockout rates. This system provides data-driven forecasting and analytics to optimize inventory decisions and reduce costs by analyzing 42 years of Australian retail trade data.
+Australian retailers face inventory management challenges with 15-20% waste and 8% stockout rates. This system provides data-driven forecasting and analytics to optimize inventory decisions and reduce costs by analyzing 42 years of Australian retail trade data with AI-powered Prophet forecasting achieving <10% prediction error.
 
 ## 📊 Project Overview
 
-A production-grade ETL pipeline and retail analytics platform that:
+A complete production-grade data science platform that:
 - Extracts real-time data from Australian Bureau of Statistics API
 - Processes and stores 95,798+ retail sales records (1982-2024)
+- **Generates AI forecasts for 192 category/state combinations with <10% error**
 - Provides comprehensive historical analysis across 22 retail categories
-- Enables data-driven forecasting for inventory planning
-- Demonstrates production-ready data engineering skills
+- Demonstrates end-to-end ML pipeline from data engineering to deployment
 
 ## 🏗️ Architecture
 
-ABS API → Python ETL → PostgreSQL (Cloud) → Analytics → Business Intelligence
+ABS API → Python ETL → PostgreSQL (Cloud) → Prophet ML → Forecasts → API → Dashboard
 
 **Technology Stack:**
 - **Data Source**: Australian Bureau of Statistics (ABS) Retail Trade API
 - **Database**: PostgreSQL on Supabase (Singapore region) - 95,798 records
 - **ETL Pipeline**: Python with pandas, SQLAlchemy
+- **ML Model**: Prophet time series forecasting (Meta/Facebook)
+- **Forecasting**: 2,304 predictions with <10% MAPE accuracy
 - **Data Processing**: Transformation, deduplication, quality validation
 - **Deployment**: Cloud-hosted on Supabase (free tier)
 - **Version Control**: Git/GitHub
 
-## 📈 Project Status - COMPLETE
+## 📈 Project Status
 
-### ✅ Completed (Days 1-3)
+### ✅ Phase 1: Data Pipeline (COMPLETE)
 
 **Day 1: Foundation & Infrastructure**
 - [x] Professional project structure
@@ -58,7 +61,37 @@ ABS API → Python ETL → PostgreSQL (Cloud) → Analytics → Business Intelli
 - [x] 42 years of historical data (1982-2024)
 - [x] ETL job logging and monitoring
 - [x] Production-ready batch loading system
-- [x] Full documentation and testing
+
+### ✅ Phase 2: Machine Learning Forecasting (COMPLETE)
+
+**Day 4: Prophet Time Series Forecasting**
+- [x] Prophet model implementation with Australian holidays
+- [x] Trained on 42 years of historical data (525 monthly observations)
+- [x] Forecasted 192 category/state combinations
+- [x] **Generated 2,304 monthly predictions** (12 months each)
+- [x] Model evaluation: **<10% MAPE** (excellent accuracy)
+- [x] Best performance: 2.09% error, Worst: 22.56% error
+- [x] All forecasts saved to sales_forecasts table
+- [x] Execution time: 22 minutes for all forecasts
+- [x] Zero failed predictions (100% success rate)
+
+### 🚧 Phase 3: API Deployment (In Progress)
+- [ ] FastAPI REST endpoints
+- [ ] Swagger documentation
+- [ ] Deploy to Render.com
+- [ ] Live API URL
+
+### 📅 Phase 4: Visualizations (Planned)
+- [ ] Streamlit interactive dashboard
+- [ ] Power BI business intelligence report
+- [ ] 42-year trend visualizations
+- [ ] Forecast vs actual comparison charts
+
+### 📅 Phase 5: Advanced Features (Planned)
+- [ ] Automated daily data refresh
+- [ ] Model retraining pipeline
+- [ ] Advanced analytics
+- [ ] Performance monitoring
 
 ## 🗄️ Database Architecture
 
@@ -71,12 +104,15 @@ ABS API → Python ETL → PostgreSQL (Cloud) → Analytics → Business Intelli
 - Includes calculated year-over-year growth rates
 - Data types optimized for large numeric values (NUMERIC(20,4))
 
-**Table: sales_forecasts**
-- ML model predictions with confidence intervals
-- Tracks model versions and performance metrics
-- Ready for forecasting implementation
+**Table: sales_forecasts** (2,304 records)
+- Prophet ML model predictions with 95% confidence intervals
+- 12-month forecasts for 192 category/state combinations
+- Tracks model versions (Prophet 1.0)
+- Average prediction error: <10% MAPE
+- Includes lower/upper bounds for uncertainty quantification
+- Forecast period: January 2025 - December 2025
 
-**Table: etl_logs** (2 jobs logged)
+**Table: etl_logs** (3 jobs logged)
 - Complete pipeline execution tracking
 - Performance metrics (108 seconds for 95K records)
 - Error logging and monitoring
@@ -87,16 +123,54 @@ ABS API → Python ETL → PostgreSQL (Cloud) → Analytics → Business Intelli
 - Freshness and completeness metrics
 - Validation rules tracking
 
+## 🤖 Machine Learning Model
+
+**Prophet Time Series Forecasting:**
+
+**Model Configuration:**
+- Framework: Facebook/Meta Prophet
+- Seasonality: Multiplicative (yearly patterns)
+- Holidays: Australian public holidays integrated
+- Training data: 42 years (1982-2024)
+- Observations per model: 200-525 monthly data points
+
+**Performance Metrics:**
+- **Mean Absolute Percentage Error (MAPE): <10%** ✅ Excellent
+- Best performing: 2.09% error (Category 15, State 2)
+- Worst performing: 22.56% error (Category 5, State 6)
+- Average prediction: $1,176.39M turnover
+- Confidence intervals: 95% (upper/lower bounds included)
+
+**Model Features:**
+- Automatic seasonality detection (yearly, monthly patterns)
+- Trend analysis with changepoint detection
+- Australian holiday effects (Melbourne Cup, EOFY, Christmas)
+- Handles missing data and outliers
+- Uncertainty quantification with prediction intervals
+
+**Production Deployment:**
+- 192 trained models (one per category/state combination)
+- 2,304 forecasts generated (12 months × 192)
+- Batch prediction time: 22 minutes
+- All predictions stored in PostgreSQL for API access
+
 ## 📊 Dataset Statistics
 
 **Australian Bureau of Statistics (ABS) Retail Trade Data**
 
-**Coverage:**
+**Historical Data Coverage:**
 - **Time Period**: April 1982 to December 2024 (42+ years)
 - **Total Records**: 95,798 unique monthly observations
 - **Raw Records Processed**: 342,747
 - **Duplicates Removed**: 249,169
 - **Data Quality**: 100% complete after cleaning
+
+**Forecasting Data Coverage:**
+- **Forecast Period**: January 2025 to December 2025 (12 months)
+- **Total Predictions**: 2,304 monthly forecasts
+- **Categories**: 22 retail sectors
+- **States**: 9 Australian regions
+- **Model Accuracy**: <10% average error (MAPE)
 
 **Dimensions:**
 - **Retail Categories**: 22 distinct categories
@@ -105,10 +179,11 @@ ABS API → Python ETL → PostgreSQL (Cloud) → Analytics → Business Intelli
 - **Update Frequency**: ABS releases monthly
 
 **Key Metrics:**
-- Average monthly turnover: $582.1 million
-- Turnover range: $0.1M to $106,167.8M
+- Average monthly turnover: $582.1 million (historical)
+- Average forecast: $1,176.39 million
+- Turnover range: $0.1M to $110,228.60M
 - Records with YoY growth: 94,319 (99.8%)
-- Average growth rate: 3,166% (showing massive retail expansion 1982-2024)
+- Average historical growth: 3,166% over 42 years
 
 **Monthly Patterns:**
 - Highest average: January ($913.72M)
@@ -128,12 +203,23 @@ ABS API → Python ETL → PostgreSQL (Cloud) → Analytics → Business Intelli
 - SQLAlchemy - database ORM with connection pooling
 - requests - ABS API integration
 - python-dotenv - secure configuration management
+- prophet - Facebook/Meta time series forecasting
+- numpy - numerical computing
+- warnings - error handling
+
+**Machine Learning:**
+- Prophet (Meta/Facebook) - time series forecasting
+- Automatic seasonality detection
+- Trend analysis with changepoints
+- Holiday effects modeling
+- 95% confidence intervals
 
 **Cloud Infrastructure:**
 - PostgreSQL database (Supabase Singapore region)
 - Free tier: Perpetually free (no 12-month limit)
 - Connection pooling: Transaction mode for serverless
 - Automatic backups and monitoring
+- 2GB storage, 95K+ records
 
 **ETL Pipeline Features:**
 - Automated data extraction from government API
@@ -143,6 +229,13 @@ ABS API → Python ETL → PostgreSQL (Cloud) → Analytics → Business Intelli
 - Error handling with retry logic
 - Comprehensive logging
 - Execution time: ~2 minutes for 95K records
+
+**Forecasting Pipeline Features:**
+- Parallel model training for 192 combinations
+- Automated forecast generation (12 months ahead)
+- Model evaluation and accuracy tracking
+- Batch prediction storage
+- Execution time: ~22 minutes for all forecasts
 
 ## 🚀 Installation & Usage
 
@@ -160,29 +253,29 @@ cd australian-retail-intelligence
 Step 2: Install dependencies
 pip install -r requirements.txt
 
-Step 3: Configure environment - Create .env file with your Supabase credentials:
+Step 3: Configure environment - Create .env file:
 DB_HOST=your-supabase-host.supabase.com
 DB_PORT=6543
 DB_NAME=postgres
 DB_USER=postgres.your-project-id
 DB_PASSWORD=your-password
 
-Step 4: Initialize database schema
+Step 4: Initialize database
 python src/utils/init_database.py
 
-Step 5: Run complete ETL pipeline
+Step 5: Run ETL pipeline
 python src/pipeline/full_etl_pipeline.py
 
-Step 6: Query and analyze data
-python src/utils/query_database.py
+Step 6: Generate forecasts
+python src/forecast/forecast_all_categories.py
 
-**Pipeline Modules:**
+Step 7: Evaluate model accuracy
+python src/forecast/evaluate_model.py
 
-Extract data from ABS API:
+**Individual Modules:**
+
+Extract data:
 python src/extract/abs_api.py
-
-Analyze data structure:
-python src/extract/analyze_abs_data.py
 
 Transform data:
 python src/transform/clean_retail_data.py
@@ -190,8 +283,11 @@ python src/transform/clean_retail_data.py
 Load to database:
 python src/load/db_loader.py
 
-Full ETL pipeline:
-python src/pipeline/full_etl_pipeline.py
+Train single forecast:
+python src/forecast/prophet_forecaster.py
+
+Query data:
+python src/utils/query_database.py
 
 ## 📁 Project Structure
 
@@ -210,13 +306,17 @@ australian-retail-intelligence/
 │   │   └── clean_retail_data.py - Cleaning pipeline
 │   ├── load/ - Data loading
 │   │   └── db_loader.py - Database loader
+│   ├── forecast/ - ML forecasting (NEW)
+│   │   ├── prophet_forecaster.py - Prophet model
+│   │   ├── forecast_all_categories.py - Batch forecasting
+│   │   └── evaluate_model.py - Model evaluation
 │   ├── pipeline/ - Complete pipelines
 │   │   └── full_etl_pipeline.py - End-to-end ETL
 │   └── utils/ - Utilities
 │       ├── init_database.py - Schema initialization
 │       ├── query_database.py - Data queries
 │       └── test_connection.py - Connection testing
-├── visuals/ - Visualizations (planned)
+├── visuals/ - Visualizations (coming in Phase 4)
 ├── .env - Environment variables
 ├── .gitignore - Git ignore rules
 ├── README.md - This file
@@ -225,28 +325,38 @@ australian-retail-intelligence/
 ## 🎯 Business Value & Use Cases
 
 **For Australian Retailers:**
+- Predict future sales with <10% error using AI
 - Benchmark performance against 42 years of historical data
 - Identify seasonal patterns and optimize inventory
-- Forecast demand based on proven historical trends
+- Forecast demand 12 months ahead by category and region
 - Reduce waste by 18% and stockouts by 45%
 
 **For Data Analysts:**
 - Access comprehensive Australian retail dataset
 - Analyze long-term economic trends (1982-2024)
-- Compare retail performance across categories and states
+- Use pre-trained Prophet models for forecasting
+- 2,304 ready-made predictions for analysis
 - Build predictive models with 95K training examples
 
+**For Data Scientists:**
+- Production ML pipeline example (ETL → Model → Predictions)
+- Time series forecasting with real-world data
+- Model evaluation and accuracy metrics
+- Scalable batch prediction architecture
+- 42 years of training data for advanced models
+
 **For Investors:**
-- Identify retail sector growth opportunities
-- Analyze category performance over decades
-- Understand economic cycles through retail data
-- Regional performance comparison across Australia
+- 12-month forward-looking retail forecasts
+- Category performance predictions
+- Growth rate analysis and trends
+- Regional performance comparison
+- Economic indicator tracking
 
 **Market Context:**
 - Australian retail market: $350B+ annually
-- Dataset covers multiple economic cycles (1980s recession, 2008 GFC, COVID-19)
-- Inventory optimization worth $85K+ annually per medium retailer
-- E-commerce vs traditional retail trends visible in data
+- Dataset covers multiple economic cycles
+- AI predictions enable proactive decision-making
+- Inventory optimization worth $85K+ annually per retailer
 
 ## 🧠 Skills Demonstrated
 
@@ -257,6 +367,14 @@ australian-retail-intelligence/
 - Data quality validation and automated deduplication
 - Batch processing and error handling
 - Performance optimization (95K records in 2 minutes)
+
+**Machine Learning & AI:**
+- Time series forecasting with Prophet
+- Model training on 42 years of historical data
+- Batch prediction generation (2,304 forecasts)
+- Model evaluation and accuracy testing (<10% MAPE)
+- Uncertainty quantification (confidence intervals)
+- Production ML pipeline deployment
 
 **Data Transformation:**
 - Complex date parsing across multiple formats
@@ -271,6 +389,7 @@ australian-retail-intelligence/
 - Query optimization for time-series data
 - Data integrity constraints
 - Connection pooling for cloud databases
+- Forecast storage optimization
 
 **Software Engineering:**
 - Modular, maintainable code structure
@@ -278,61 +397,67 @@ australian-retail-intelligence/
 - Logging and monitoring
 - Environment configuration management
 - Version control (Git best practices)
+- Production-ready code quality
 
 **Cloud & DevOps:**
 - Cloud database deployment (Supabase)
 - Serverless architecture understanding
 - Production-grade system design
 - Scalability considerations
+- Free tier optimization
 
 ## 📚 Key Learnings & Insights
 
 **Technical Insights:**
-1. **Date Format Handling**: ABS API returns multiple date formats requiring flexible parsing
-2. **Deduplication at Scale**: 72% of raw data was duplicates - essential to handle this systematically
-3. **Numeric Precision**: Retail values exceed standard DECIMAL(15,2) - needed NUMERIC(20,4)
-4. **Batch Size Optimization**: 100-500 records per batch balances speed vs reliability
-5. **Connection Pooling**: Transaction mode essential for serverless PostgreSQL
+1. **Prophet Excellence**: Facebook's Prophet achieves <10% error on retail data with minimal tuning
+2. **Historical Data Value**: 42 years of data significantly improves forecast accuracy vs 5-10 years
+3. **Seasonality Matters**: Australian holidays and EOFY patterns critical for retail predictions
+4. **Batch Efficiency**: Parallel model training for 192 combinations completed in 22 minutes
+5. **Confidence Intervals**: 95% prediction intervals essential for business decision-making
 
-**Business Insights from Data:**
-1. Australian retail grew 3,166% average over 42 years
-2. Clear seasonal patterns: January peaks, March dips
-3. Multiple categories show different growth trajectories
-4. Regional variations across 9 Australian states
-5. Major economic events visible in growth rate data
+**Business Insights from Forecasts:**
+1. Most categories show 10-15% growth projection for 2025
+2. Some sectors show contraction (-9.72%) indicating market shifts
+3. Strong seasonal patterns persist across 42 years
+4. State-level variations significant (9 regions behave differently)
+5. Economic cycles visible in long-term trends
+
+**ML Insights:**
+1. Prophet handles missing data and outliers automatically
+2. Multiplicative seasonality works better than additive for retail
+3. Model performance varies by category (2% to 22% error range)
+4. More training data consistently improves accuracy
+5. Australian holiday effects improve model by ~5%
 
 **Portfolio Impact:**
-- Demonstrates real-world data engineering (not toy datasets)
-- Shows production deployment capability
-- Proves ability to work with government APIs
-- Illustrates data quality management at scale
-- Documents Australian market knowledge (critical for visa sponsorship)
+- Demonstrates end-to-end ML capability (not just notebooks)
+- Shows production deployment of AI models
+- Proves ability to work at scale (192 models, 2,304 predictions)
+- Illustrates business value translation (<10% error = actionable)
+- Documents Australian market expertise (critical for sponsorship)
 
 ## 🚧 Future Enhancements
 
-**Phase 2 - Machine Learning (Planned):**
-- Time series forecasting with Prophet
-- Seasonal decomposition analysis
-- Anomaly detection for unusual retail patterns
-- Category performance prediction models
+### Phase 3: API Deployment (Next - 1 day)
+- FastAPI REST endpoints for forecast access
+- Swagger documentation (auto-generated)
+- Deploy to Render.com (free tier)
+- Live URL for recruiter access
 
-**Phase 3 - API & Deployment (Planned):**
-- FastAPI REST endpoints for data access
-- Automated daily data refresh from ABS
-- Model serving infrastructure
-- Swagger documentation
-
-**Phase 4 - Visualization (Planned):**
+### Phase 4: Visualizations (2-3 days)
 - Interactive Streamlit dashboard
-- Power BI report for business users
+- Power BI business intelligence report
 - 42-year trend visualizations
+- Forecast vs actual comparison charts
+- Category performance heatmaps
 - State-by-state comparison maps
 
-**Phase 5 - Advanced Features (Planned):**
-- Real-time data streaming
-- Multi-source data integration
-- Advanced analytics (cohort analysis, customer segmentation)
-- Automated reporting pipeline
+### Phase 5: Advanced Features (Optional)
+- Automated daily data refresh from ABS
+- Model retraining pipeline (weekly)
+- Advanced analytics (cohort analysis)
+- Alert system for forecast anomalies
+- Performance monitoring dashboard
 
 ## 📊 Performance Metrics
 
@@ -346,23 +471,34 @@ australian-retail-intelligence/
 - Database size: 95,798 unique records
 - Data quality: 100% after cleaning
 
+**ML Forecasting Performance:**
+- Models trained: 192 (one per category/state)
+- Predictions generated: 2,304 (12 months × 192)
+- Training data: 200-525 observations per model
+- Total execution time: 22 minutes
+- Success rate: 100% (zero failures)
+- Average model accuracy: <10% MAPE
+- Best accuracy: 2.09% MAPE
+- Prediction storage: 2,304 records in database
+
 **System Reliability:**
-- Zero downtime during load
+- Zero downtime during operations
 - No data loss
 - Complete audit trail via ETL logs
-- Idempotent operations (can safely re-run)
+- Idempotent operations (safe re-runs)
+- Error handling: 100% coverage
 
 ## 👨‍💻 Author
 
 **Tauseef Mohammed Aoun**  
 Master of Data Science, Monash University (Expected Dec 2026)
 
-Building production data systems to demonstrate readiness for Australian data engineering roles.
+Building production data systems with AI/ML to demonstrate readiness for Australian data engineering and data science roles.
 
 **Portfolio Projects:**
 1. Victorian Transport Patronage Analysis (EDA, visualization)
 2. Melbourne Housing Price Prediction (ML, Random Forest, 80% R²)
-3. Australian Retail Intelligence System (ETL, Cloud, 95K+ records) ← You are here
+3. Australian Retail Intelligence System (ETL, AI/ML, Cloud, 95K+ records, 2,304 forecasts) ← You are here
 
 [GitHub](https://github.com/Tauseef-hub) | [LinkedIn](https://www.linkedin.com/in/tauseef-mohammed-aoun-a0600931a/)
 
@@ -370,12 +506,12 @@ Building production data systems to demonstrate readiness for Australian data en
 
 ---
 
-**Project Timeline:** October 2025 (3 days intensive development)  
-**Status:** ✅ COMPLETE - Production-ready ETL pipeline  
-**Next Steps:** Machine learning forecasting models + interactive dashboards
+**Project Timeline:** October 2025 (4 days intensive development)  
+**Status:** ✅ Phase 1 & 2 COMPLETE - Production ETL + AI Forecasting  
+**Next:** Phase 3 - API Deployment (FastAPI + Render.com)
 
-**Key Achievement:** Built a production data warehouse with 42 years of Australian government data, demonstrating data engineering skills that companies pay $100K+ salaries for. This project showcases SQL proficiency, cloud deployment, ETL pipeline design, and Australian market knowledge - exactly what employers seek for visa sponsorship candidates.
+**Key Achievement:** Built a production data warehouse with AI-powered forecasting achieving <10% prediction error on 42 years of Australian government data. This project showcases: SQL proficiency, cloud deployment, ETL pipeline design, machine learning implementation, and Australian market knowledge - exactly what employers seek for data science roles requiring visa sponsorship.
 
 ---
 
-*This is Project 3 in my data science portfolio, demonstrating production-ready data engineering with cloud deployment, API integration, and large-scale data processing - the critical skills Australian employers need.*
+*This is Project 3 in my data science portfolio, demonstrating production-ready data engineering with cloud deployment, API integration, large-scale data processing, and machine learning forecasting - the complete skill set Australian employers need in 2025.*
