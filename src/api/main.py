@@ -99,14 +99,14 @@ def health_check():
 def get_forecasts(
     category: Optional[str] = Query(None, description="Retail category (e.g., '20')"),
     state: Optional[str] = Query(None, description="Australian state (e.g., 'AUS', 'NSW')"),
-    limit: Optional[int] = Query(None, ge=1, le=100000, description="Number of records to return (no limit if not specified)")
+    limit: int = Query(100000, ge=1, le=100000, description="Number of records to return (default 100000)")
 ):
     """
     Get retail sales forecasts
     
     - **category**: Filter by retail category (optional)
     - **state**: Filter by Australian state (optional)
-    - **limit**: Maximum number of records (optional, returns all if not specified)
+    - **limit**: Maximum number of records (default 100000, returns nearly all data)
     """
     try:
         query = """
@@ -134,11 +134,8 @@ def get_forecasts(
             query += " AND state = :state"
             params['state'] = state
         
-        query += " ORDER BY forecast_date"
-        
-        if limit:
-            query += " LIMIT :limit"
-            params['limit'] = limit
+        query += " ORDER BY forecast_date LIMIT :limit"
+        params['limit'] = limit
         
         df = pd.read_sql(text(query), engine, params=params)
         
@@ -197,7 +194,7 @@ def get_sales(
     state: Optional[str] = Query(None, description="Australian state"),
     start_date: Optional[str] = Query(None, description="Start date (YYYY-MM-DD)"),
     end_date: Optional[str] = Query(None, description="End date (YYYY-MM-DD)"),
-    limit: Optional[int] = Query(None, ge=1, le=100000, description="Number of records (returns all if not specified)")
+    limit: int = Query(100000, ge=1, le=100000, description="Number of records (default 100000)")
 ):
     """
     Get historical retail sales data
@@ -206,7 +203,7 @@ def get_sales(
     - **state**: Filter by Australian state (optional)
     - **start_date**: Filter from this date (optional)
     - **end_date**: Filter until this date (optional)
-    - **limit**: Maximum records (optional, returns all if not specified)
+    - **limit**: Maximum records (default 100000, returns nearly all data)
     """
     try:
         query = """
@@ -240,11 +237,8 @@ def get_sales(
             query += " AND sale_date <= :end_date"
             params['end_date'] = end_date
         
-        query += " ORDER BY sale_date DESC"
-        
-        if limit:
-            query += " LIMIT :limit"
-            params['limit'] = limit
+        query += " ORDER BY sale_date DESC LIMIT :limit"
+        params['limit'] = limit
         
         df = pd.read_sql(text(query), engine, params=params)
         
