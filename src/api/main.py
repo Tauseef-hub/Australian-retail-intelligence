@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 import pandas as pd
+import numpy as np
 import os
 from datetime import datetime
 from typing import Optional, List
@@ -99,14 +100,14 @@ def health_check():
 def get_forecasts(
     category: Optional[str] = Query(None, description="Retail category (e.g., '20')"),
     state: Optional[str] = Query(None, description="Australian state (e.g., 'AUS', 'NSW')"),
-    limit: int = Query(100000, ge=1, le=100000, description="Number of records to return (default 100000)")
+    limit: int = Query(96000, ge=1, le=100000, description="Number of records (default 96000)")
 ):
     """
     Get retail sales forecasts
     
     - **category**: Filter by retail category (optional)
     - **state**: Filter by Australian state (optional)
-    - **limit**: Maximum number of records (default 100000, returns nearly all data)
+    - **limit**: Maximum number of records (default 10000)
     """
     try:
         query = """
@@ -141,6 +142,10 @@ def get_forecasts(
         
         if df.empty:
             raise HTTPException(status_code=404, detail="No forecasts found")
+        
+        # Replace NaN/NA values with None (JSON compliant)
+        df = df.replace({np.nan: None, pd.NA: None, pd.NaT: None})
+        df = df.where(pd.notna(df), None)
         
         # Convert to dict and format dates
         df['forecast_date'] = df['forecast_date'].astype(str)
@@ -194,7 +199,7 @@ def get_sales(
     state: Optional[str] = Query(None, description="Australian state"),
     start_date: Optional[str] = Query(None, description="Start date (YYYY-MM-DD)"),
     end_date: Optional[str] = Query(None, description="End date (YYYY-MM-DD)"),
-    limit: int = Query(100000, ge=1, le=100000, description="Number of records (default 100000)")
+    limit: int = Query(96000, ge=1, le=100000, description="Number of records (default 96000)")
 ):
     """
     Get historical retail sales data
@@ -203,7 +208,7 @@ def get_sales(
     - **state**: Filter by Australian state (optional)
     - **start_date**: Filter from this date (optional)
     - **end_date**: Filter until this date (optional)
-    - **limit**: Maximum records (default 100000, returns nearly all data)
+    - **limit**: Maximum records (default 10000)
     """
     try:
         query = """
@@ -244,6 +249,10 @@ def get_sales(
         
         if df.empty:
             raise HTTPException(status_code=404, detail="No sales data found")
+        
+        # Replace NaN/NA values with None (JSON compliant)
+        df = df.replace({np.nan: None, pd.NA: None, pd.NaT: None})
+        df = df.where(pd.notna(df), None)
         
         # Convert dates
         df['sale_date'] = df['sale_date'].astype(str)
