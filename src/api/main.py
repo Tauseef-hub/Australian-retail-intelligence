@@ -103,39 +103,44 @@ def get_forecasts(
     limit: int = Query(96000, ge=1, le=100000, description="Number of records (default 96000)")
 ):
     """
-    Get retail sales forecasts
+    Get retail sales forecasts WITH proper state and category names
     
     - **category**: Filter by retail category (optional)
     - **state**: Filter by Australian state (optional)
-    - **limit**: Maximum number of records (default 10000)
+    - **limit**: Maximum number of records (default 96000)
     """
     try:
         query = """
             SELECT 
-                forecast_date,
-                category,
-                state,
-                predicted_turnover,
-                lower_bound,
-                upper_bound,
-                confidence_interval,
-                model_name,
-                model_version
-            FROM sales_forecasts
+                sf.forecast_date,
+                sf.category as category_code,
+                COALESCE(cm.category_name, sf.category) as category_name,
+                sf.state as state_code,
+                COALESCE(sm.state_name, sf.state) as state_name,
+                COALESCE(sm.state_full_name, sf.state) as state_full_name,
+                sf.predicted_turnover,
+                sf.lower_bound,
+                sf.upper_bound,
+                sf.confidence_interval,
+                sf.model_name,
+                sf.model_version
+            FROM sales_forecasts sf
+            LEFT JOIN state_mapping sm ON sf.state = sm.state_code
+            LEFT JOIN category_mapping cm ON sf.category = cm.category_code
             WHERE 1=1
         """
         
         params = {}
         
         if category:
-            query += " AND category = :category"
+            query += " AND sf.category = :category"
             params['category'] = category
         
         if state:
-            query += " AND state = :state"
+            query += " AND sf.state = :state"
             params['state'] = state
         
-        query += " ORDER BY forecast_date LIMIT :limit"
+        query += " ORDER BY sf.forecast_date LIMIT :limit"
         params['limit'] = limit
         
         df = pd.read_sql(text(query), engine, params=params)
@@ -202,47 +207,52 @@ def get_sales(
     limit: int = Query(96000, ge=1, le=100000, description="Number of records (default 96000)")
 ):
     """
-    Get historical retail sales data
+    Get historical retail sales data WITH proper state and category names
     
     - **category**: Filter by retail category (optional)
     - **state**: Filter by Australian state (optional)
     - **start_date**: Filter from this date (optional)
     - **end_date**: Filter until this date (optional)
-    - **limit**: Maximum records (default 10000)
+    - **limit**: Maximum records (default 96000)
     """
     try:
         query = """
             SELECT 
-                sale_date,
-                category,
-                state,
-                turnover_millions,
-                month_name,
-                year,
-                growth_rate_yoy
-            FROM retail_sales
+                rs.sale_date,
+                rs.category as category_code,
+                COALESCE(cm.category_name, rs.category) as category_name,
+                rs.state as state_code,
+                COALESCE(sm.state_name, rs.state) as state_name,
+                COALESCE(sm.state_full_name, rs.state) as state_full_name,
+                rs.turnover_millions,
+                rs.month_name,
+                rs.year,
+                rs.growth_rate_yoy
+            FROM retail_sales rs
+            LEFT JOIN state_mapping sm ON rs.state = sm.state_code
+            LEFT JOIN category_mapping cm ON rs.category = cm.category_code
             WHERE 1=1
         """
         
         params = {}
         
         if category:
-            query += " AND category = :category"
+            query += " AND rs.category = :category"
             params['category'] = category
         
         if state:
-            query += " AND state = :state"
+            query += " AND rs.state = :state"
             params['state'] = state
         
         if start_date:
-            query += " AND sale_date >= :start_date"
+            query += " AND rs.sale_date >= :start_date"
             params['start_date'] = start_date
         
         if end_date:
-            query += " AND sale_date <= :end_date"
+            query += " AND rs.sale_date <= :end_date"
             params['end_date'] = end_date
         
-        query += " ORDER BY sale_date DESC LIMIT :limit"
+        query += " ORDER BY rs.sale_date DESC LIMIT :limit"
         params['limit'] = limit
         
         df = pd.read_sql(text(query), engine, params=params)
@@ -302,19 +312,22 @@ def get_sales_summary():
 
 @app.get("/categories")
 def get_categories():
-    """Get list of all retail categories"""
+    """Get list of all retail categories WITH proper names"""
     try:
         query = """
-            SELECT DISTINCT category
-            FROM retail_sales
-            ORDER BY category
+            SELECT DISTINCT 
+                rs.category as category_code,
+                COALESCE(cm.category_name, rs.category) as category_name
+            FROM retail_sales rs
+            LEFT JOIN category_mapping cm ON rs.category = cm.category_code
+            ORDER BY rs.category
         """
         
         df = pd.read_sql(text(query), engine)
         
         return {
             "count": len(df),
-            "categories": df['category'].tolist()
+            "categories": df.to_dict(orient='records')
         }
         
     except Exception as e:
@@ -322,19 +335,23 @@ def get_categories():
 
 @app.get("/states")
 def get_states():
-    """Get list of all Australian states/territories"""
+    """Get list of all Australian states/territories WITH proper names"""
     try:
         query = """
-            SELECT DISTINCT state
-            FROM retail_sales
-            ORDER BY state
+            SELECT DISTINCT 
+                rs.state as state_code,
+                COALESCE(sm.state_name, rs.state) as state_name,
+                COALESCE(sm.state_full_name, rs.state) as state_full_name
+            FROM retail_sales rs
+            LEFT JOIN state_mapping sm ON rs.state = sm.state_code
+            ORDER BY rs.state
         """
         
         df = pd.read_sql(text(query), engine)
         
         return {
             "count": len(df),
-            "states": df['state'].tolist()
+            "states": df.to_dict(orient='records')
         }
         
     except Exception as e:
