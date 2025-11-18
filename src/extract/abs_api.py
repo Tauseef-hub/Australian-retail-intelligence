@@ -106,7 +106,30 @@ class ABSRetailDataExtractor:
                 from io import StringIO
                 df = pd.read_csv(StringIO(response.text))
                 
-                print(f"✅ Retrieved {len(df)} records")
+                print(f"✅ Retrieved {len(df):,} raw records")
+                
+                # 🔧 CRITICAL FIX: Filter to M1 AND TSEST 20 (original, unadjusted series)
+                # ABS returns:
+                # - Multiple MEASURE types (M1, M4, etc.)
+                # - Multiple TSEST types within each measure (10, 20, 30, etc.)
+                # We only want M1 + TSEST 20 to get ONE clean record per date/category/state
+                if 'MEASURE' in df.columns and 'TSEST' in df.columns:
+                    before_filter = len(df)
+                    df = df[(df['MEASURE'] == 'M1') & (df['TSEST'] == 20)].copy()
+                    after_filter = len(df)
+                    removed = before_filter - after_filter
+                    print(f"✅ Filtered to M1 + TSEST 20 (original): {after_filter:,} records")
+                    print(f"   Removed {removed:,} duplicate series")
+                elif 'MEASURE' in df.columns:
+                    before_filter = len(df)
+                    df = df[df['MEASURE'] == 'M1'].copy()
+                    after_filter = len(df)
+                    removed = before_filter - after_filter
+                    print(f"✅ Filtered to M1 measure: {after_filter:,} records")
+                    print(f"   Removed {removed:,} duplicate series")
+                    print(f"   ⚠️ Warning: TSEST column not found - may still have duplicates")
+                else:
+                    print("⚠️ Warning: MEASURE column not found - data may contain duplicates")
                 
                 return df
             else:
