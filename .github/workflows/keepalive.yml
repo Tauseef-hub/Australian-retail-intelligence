@@ -1,0 +1,15 @@
+name: keep-api-warm
+on:
+  schedule:
+    - cron: '*/10 * * * *'   # every 10 min; Render free sleeps after ~15 min idle
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping live API to prevent cold starts
+        run: |
+          BASE=https://australian-retail-intelligence-1.onrender.com
+          for p in / /health; do
+            echo "GET $p -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 90 "$BASE$p")"
+          done
