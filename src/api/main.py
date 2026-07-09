@@ -5,10 +5,23 @@ from dotenv import load_dotenv
 import pandas as pd
 import numpy as np
 import os
+import logging
 from datetime import datetime
 from typing import Optional, List
 
 load_dotenv()
+
+logger = logging.getLogger("retail_api")
+
+
+def _db_error(exc: Exception) -> HTTPException:
+    """Log the real error server-side and return a generic 503 so internal
+    details (DB host, driver errors, connection strings) are never leaked."""
+    logger.error("Database error: %s", exc)
+    return HTTPException(
+        status_code=503,
+        detail="Database temporarily unavailable. Please try again shortly.",
+    )
 
 # Initialize FastAPI
 app = FastAPI(
@@ -51,7 +64,7 @@ def root():
         "author": "Tauseef Mohammed Aoun",
         "description": "Production API providing 42 years of Australian retail data and AI-powered forecasts",
         "data_coverage": {
-            "historical_records": "95,798 records (1982-2024)",
+            "historical_records": "93,578 records (1982-2024)",
             "forecasts": "2,304 predictions (2025)",
             "categories": 22,
             "states": 9
@@ -85,10 +98,10 @@ def health_check():
             "timestamp": datetime.now().isoformat()
         }
     except Exception as e:
+        logger.error("Health check DB error: %s", e)
         return {
             "status": "unhealthy",
             "database": "disconnected",
-            "error": str(e),
             "timestamp": datetime.now().isoformat()
         }
 
@@ -163,7 +176,7 @@ def get_forecasts(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _db_error(e)
 
 @app.get("/forecasts/summary")
 def get_forecast_summary():
@@ -192,7 +205,7 @@ def get_forecast_summary():
         return result
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _db_error(e)
 
 # ============================================================================
 # HISTORICAL DATA ENDPOINTS
@@ -275,7 +288,7 @@ def get_sales(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _db_error(e)
 
 @app.get("/sales/summary")
 def get_sales_summary():
@@ -304,7 +317,7 @@ def get_sales_summary():
         return result
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _db_error(e)
 
 # ============================================================================
 # METADATA ENDPOINTS
@@ -331,7 +344,7 @@ def get_categories():
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _db_error(e)
 
 @app.get("/states")
 def get_states():
@@ -355,7 +368,7 @@ def get_states():
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _db_error(e)
 
 # ============================================================================
 # RUN SERVER
