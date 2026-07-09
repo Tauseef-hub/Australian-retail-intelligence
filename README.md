@@ -4,7 +4,7 @@
 
 ![Project Status](https://img.shields.io/badge/Status-Phase%204%20Complete-brightgreen)
 ![Database](https://img.shields.io/badge/Database-PostgreSQL-blue)
-![Cloud](https://img.shields.io/badge/Cloud-Supabase-green)
+![Cloud](https://img.shields.io/badge/Cloud-Neon-green)
 ![API](https://img.shields.io/badge/API-Live-success)
 ![Records](https://img.shields.io/badge/Records-93,578-orange)
 ![Forecasts](https://img.shields.io/badge/Forecasts-2,304-purple)
@@ -32,14 +32,14 @@ A complete production-grade data science platform demonstrating the full ML life
 
 ## 🏗️ Architecture
 ```
-ABS API → ETL Pipeline → PostgreSQL (Supabase) → Prophet ML → FastAPI → Power BI
+ABS API → ETL Pipeline → PostgreSQL (Neon) → Prophet ML → FastAPI → Power BI
    ↓            ↓                ↓                    ↓           ↓          ↓
 Extract    Transform        93,578 Records      2,304 Forecasts  Live API  Dashboard
 ```
 
 **Technology Stack:**
 - **Data Source**: Australian Bureau of Statistics (ABS) Retail Trade API
-- **Database**: PostgreSQL on Supabase - 93,578 clean records
+- **Database**: PostgreSQL on Neon - 93,578 clean records
 - **ETL Pipeline**: Python, pandas, SQLAlchemy
 - **ML Model**: Prophet time series forecasting (Meta/Facebook)
 - **API**: FastAPI with automatic OpenAPI documentation
@@ -53,7 +53,7 @@ Extract    Transform        93,578 Records      2,304 Forecasts  Live API  Dashb
 
 **Foundation & Infrastructure:**
 - [x] Professional project structure with modular design
-- [x] Cloud PostgreSQL database setup (Supabase Singapore)
+- [x] Cloud PostgreSQL database setup (Neon, Sydney)
 - [x] Database connection tested and production-ready
 - [x] Environment configuration with secure credentials
 
@@ -335,7 +335,7 @@ curl https://australian-retail-intelligence-1.onrender.com/states
 - **psycopg2** - PostgreSQL database adapter
 
 **Cloud Infrastructure:**
-- **Database**: PostgreSQL on Supabase (Singapore region)
+- **Database**: PostgreSQL on Neon (Sydney region)
 - **API Hosting**: Render.com (Singapore region)
 - **Deployment**: Free tier (perpetually free)
 - **SSL/HTTPS**: Automatic with custom domain support
@@ -366,7 +366,7 @@ curl https://australian-retail-intelligence-1.onrender.com/states
 **Prerequisites:**
 - Python 3.11+
 - Git
-- Supabase account (free tier)
+- Neon account (free tier)
 - Power BI Desktop (for dashboard)
 
 **Local Development:**
@@ -379,7 +379,7 @@ cd australian-retail-intelligence
 pip install -r requirements.txt
 
 # Configure environment (.env file)
-DB_HOST=your-supabase-host.supabase.co
+DB_HOST=your-neon-host.neon.tech
 DB_PORT=6543
 DB_NAME=postgres
 DB_USER=postgres.your-project-id
@@ -483,7 +483,7 @@ australian-retail-intelligence/
 
 **Data Engineering:**
 - Production ETL pipeline (93K records processed)
-- Cloud database management (PostgreSQL/Supabase)
+- Cloud database management (PostgreSQL/Neon)
 - API integration with government data sources
 - Data quality engineering (duplicate detection/removal)
 - Batch processing with progress tracking
@@ -522,7 +522,7 @@ australian-retail-intelligence/
 
 **Cloud & DevOps:**
 - Live API deployment (Render.com)
-- Cloud database configuration (Supabase)
+- Cloud database configuration (Neon)
 - Serverless architecture
 - Environment variable management
 - Continuous deployment from GitHub
@@ -544,7 +544,7 @@ australian-retail-intelligence/
 
 **Technical Insights:**
 1. **API Design**: Query parameters provide flexibility without complexity
-2. **Cloud Integration**: Supabase + Render = complete free-tier stack
+2. **Cloud Integration**: Neon + Render = complete free-tier stack
 3. **Prophet Excellence**: <10% error achievable with proper data cleaning
 4. **FastAPI Benefits**: Auto-generated docs save documentation time
 5. **Power BI Integration**: Direct API connection enables real-time dashboards

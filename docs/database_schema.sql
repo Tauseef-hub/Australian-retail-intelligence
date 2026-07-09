@@ -12,7 +12,7 @@ CREATE TABLE retail_sales (
     turnover_millions DECIMAL(15, 2),
     month_name VARCHAR(20),
     year INTEGER,
-    growth_rate_yoy DECIMAL(5, 2),
+    growth_rate_yoy DECIMAL(10, 2),
     data_source VARCHAR(100) DEFAULT 'ABS_MHSI',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

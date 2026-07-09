@@ -46,6 +46,7 @@ def get_db_engine():
     connection_string = (
         f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
         f"@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+        f"?sslmode=require"
     )
     return create_engine(connection_string, pool_pre_ping=True)
 
