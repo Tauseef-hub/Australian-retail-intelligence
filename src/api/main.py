@@ -59,17 +59,32 @@ engine = get_db_engine()
 @app.get("/")
 def root():
     """Welcome endpoint with API information"""
+    coverage = {
+        "historical_records": "93,578 records (1982-2024)",
+        "forecasts": "2,304 predictions (2025)",
+        "categories": 22,
+        "states": 9,
+    }
+    try:
+        with engine.connect() as conn:
+            rs = conn.execute(text("SELECT COUNT(*) FROM retail_sales")).scalar()
+            sf = conn.execute(text("SELECT COUNT(*) FROM sales_forecasts")).scalar()
+            cats = conn.execute(text("SELECT COUNT(DISTINCT category) FROM retail_sales")).scalar()
+            sts = conn.execute(text("SELECT COUNT(DISTINCT state) FROM retail_sales")).scalar()
+        coverage = {
+            "historical_records": f"{rs:,} records (1982-2024)",
+            "forecasts": f"{sf:,} predictions (2025)",
+            "categories": cats,
+            "states": sts,
+        }
+    except Exception as exc:
+        logger.warning("root(): live counts unavailable, using fallback (%s)", exc)
     return {
         "message": "Australian Retail Intelligence API",
         "version": "1.0.0",
         "author": "Tauseef Mohammed Aoun",
         "description": "Production API providing 42 years of Australian retail data and AI-powered forecasts",
-        "data_coverage": {
-            "historical_records": "93,578 records (1982-2024)",
-            "forecasts": "2,304 predictions (2025)",
-            "categories": 22,
-            "states": 9
-        },
+        "data_coverage": coverage,
         "endpoints": {
             "documentation": "/docs",
             "health": "/health",
