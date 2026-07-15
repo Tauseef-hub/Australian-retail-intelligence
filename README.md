@@ -31,8 +31,8 @@ measure MAPE against the held-out actuals:
 
 | Scope | Mean MAPE | Notes |
 |---|---|---|
-| **All 192 series** | **7.28%** | median 5.11%; 81% of series under 10% |
-| 5 highest-volume series | 1.35% | best **2.09%**, worst **22.56%** |
+| **All 192 series** | **7.28%** | median 5.11%; best 0.42%, worst 58.48%; 81% of series under 10% |
+| 5 highest-volume series | 1.35% | best **0.60%**, worst **3.14%** |
 
 The largest errors come from small, sparse series; high-volume totals forecast
 tightly. Reproduce it offline (no database required) — the committed data and
