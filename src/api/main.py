@@ -100,9 +100,14 @@ def root():
 # HEALTH CHECK
 # ============================================================================
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 def health_check():
-    """Check API and database health"""
+    """Check API and database health.
+
+    Accepts HEAD as well as GET so lightweight uptime probes (e.g. UptimeRobot,
+    which defaults to HEAD) return 200 instead of 405. Each probe runs the
+    SELECT 1 below, which also keeps the Render instance and Neon compute warm.
+    """
     try:
         with engine.connect() as conn:
             result = conn.execute(text("SELECT 1"))
